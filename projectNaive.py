@@ -1,38 +1,60 @@
+from pprint import pprint
+
 import pandas as pd
-table = pd.read_csv('data for NB buys computer.csv')
-table = table.drop(columns=['id'])
 
-# some yes and no
-count_yes = table['Buy_Computer'].value_counts()['yes']
-count_no = table['Buy_Computer'].value_counts()['no']
 
-# Calculate the prior probabilities
-percent_yes = count_yes / len(table)
-percent_no = count_no / len(table)
+class DataLoader:
+    def __init__(self, filepath):
+        self.filepath = filepath
+        self.df = None
 
-# Initialize dictionaries for conditional probabilities
-yes_dict = {}
-no_dict = {}
+    def load(self):
+        self.df = pd.read_csv(self.filepath)
+        return self.df
 
-for col in table.columns[:-1]:
-    yes_dict[col] = {}
-    no_dict[col] = {}
-for index, row in table.iterrows():
-    label = row['Buy_Computer']
-    for col in table.columns[:-1]:
-        val = row[col]
-        if label == 'yes':
-            yes_dict[col][val] = yes_dict[col].get(val, 0) + 1
-        else:
-            no_dict[col][val] = no_dict[col].get(val, 0) + 1
+    def drop_columns(self, columns):
+        if self.df is not None:
+            self.df = self.df.drop(columns=columns)
+        return self.df
 
-for col in yes_dict:
-    for val in yes_dict[col]:
-        yes_dict[col][val] /= count_yes
+    def get_data(self):
+        return self.df
 
-for col in no_dict:
-    for val in no_dict[col]:
-        no_dict[col][val] /= count_no
 
-print(yes_dict)
-print(no_dict)
+class NaiveBayesClassifier:
+    def __init__(self):
+        self.target = None
+        self.labels = None
+        self.priors = {}
+        self.conditional_probs = {}
+
+    def fit(self, table: pd.DataFrame):
+        # Step 1: detect the target column (last column)
+        self.target = table.columns[-1]
+        self.labels = table[self.target].unique()
+
+        # Step 2: calculate priors (P(label))
+        label_counts = table[self.target].value_counts()
+        self.priors = {label: label_counts[label] / len(table) for label in self.labels}
+
+        # Step 3: calculate conditional probabilities
+        self.conditional_probs = {label: {} for label in self.labels}
+        features = table.columns.drop(self.target)
+
+        for feature in features:
+            for label in self.labels:
+                filtered = table[table[self.target] == label]
+                value_counts = filtered[feature].value_counts()
+                total = len(filtered)
+                probs = {val: count / total for val, count in value_counts.items()}
+                self.conditional_probs[label][feature] = probs
+
+
+loader = DataLoader("data for NB buys computer.csv")
+loader.load()
+loader.drop_columns(['id'])
+clean_df = loader.get_data()
+
+model = NaiveBayesClassifier()
+model.fit(clean_df)
+pprint(model.conditional_probs)
