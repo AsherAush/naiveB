@@ -2,6 +2,7 @@ from data_loader import DataLoader
 from naive_bayes import NaiveBayesClassifier
 from predictor import NaiveBayesPredictor
 
+
 class Main:
     def __init__(self):
         self.filepath = input("Enter the name of the CSV file (including the extension): ").strip()
