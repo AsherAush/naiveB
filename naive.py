@@ -31,5 +31,5 @@ for feature in features:
         # Calculating the conditional probabilities
         probs = {val: count / total for val, count in value_counts.items()}
         conditional_probs[label][feature] = probs
-pprint(conditional_probs)
+# pprint(conditional_probs)
 
