@@ -1,8 +1,6 @@
-from pprint import pprint
 
 import pandas as pd
 
-from naive import conditional_probs
 
 
 class DataLoader:
@@ -25,7 +23,6 @@ class DataLoader:
     # פונקציה שמחזירה את הדאטה
     def get_data(self):
         return self.df
-
 
 class NaiveBayesClassifier:
     def __init__(self):
@@ -79,14 +76,16 @@ class NaiveBayesPredictor:
     def __init__(self, model: NaiveBayesClassifier):
         self.model = model
 
-    def predict(self, user_date : dict):
-        result = []
+    def predict(self, user_data : dict):
+        result = {}
         for label in self.model.labels:
             probability = self.model.priors[label]
-            for  key in user_date:
-                probability *= self.model.conditional_probs[label][key][user_date[key]]
-            result.append(probability)
-        print("Predicted probabilities:", max(result))
+            for  key in user_data:
+                probability *= self.model.conditional_probs[label][key].get(user_data[key], 1e-6)
+            result[label] = probability
+        predicted_label = max(result, key=result.get)
+        print("Predicted probabilities:", result[predicted_label], "for label:", predicted_label)
+        return predicted_label
 
 
 
@@ -103,9 +102,14 @@ predictor = NaiveBayesPredictor(model)
 test_observation = {
     "age": "youth",
     "income": "high",
-    "student": "no",
+    "student": "yes",
     "credit_rating": "fair"
 }
 
 # ביצוע חיזוי
 predictor.predict(test_observation)
+correct = 0
+total = 0
+
+
+

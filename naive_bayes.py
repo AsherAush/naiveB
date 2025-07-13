@@ -1,29 +1,5 @@
 import pandas as pd
 
-
-
-class DataLoader:
-    # פןנקציה שמקבלת את הקובץ וגם מגדירה את ה דאטה החדשה
-    def __init__(self, filepath):
-        self.filepath = filepath
-        self.df = None
-
-    # פונקציה שעושה השמה מהקובץ לדאטה
-    def load(self):
-        self.df = pd.read_csv(self.filepath)
-        return self.df
-
-    #פונקציה שמוחקת עמודות לא רלוונטיות
-    def drop_columns(self, columns):
-        if self.df is not None:
-            self.df = self.df.drop(columns=columns)
-        return self.df
-
-    # פונקציה שמחזירה את הדאטה
-    def get_data(self):
-        return self.df
-
-
 class NaiveBayesClassifier:
     def __init__(self):
         # משתנה שמחזיקה את העמודה שעליה אני עושה את הבדיקה
@@ -34,6 +10,7 @@ class NaiveBayesClassifier:
         self.priors = {}
         # משתנה שמחזיק את ההסתברויות של כל הערכים מכל הדאטה
         self.conditional_probs = {}
+        self.columns = None
 
     def fit(self, table: pd.DataFrame):
         # מקבל את העמודה אחרונה (הנבדקת)
@@ -52,6 +29,7 @@ class NaiveBayesClassifier:
             self.conditional_probs[label] = {}
             # שומר במערך את כל העמודות מהדאטה לא כולל העמודה הנבדקת
         features = table.columns.drop(self.target)
+        self.columns = features
 
         # עבור כל עמודה הוא עושה בדיקה כמה פעמים הוא מופיע עם כל ערך
         for feature in features:
@@ -69,60 +47,4 @@ class NaiveBayesClassifier:
 
                     probs[val] = count / total
                 self.conditional_probs[label][feature] = probs
-
-
-
-class NaiveBayesPredictor:
-    def __init__(self, model: NaiveBayesClassifier):
-        self.model = model
-
-    def predict(self, user_data: dict):
-        result = []
-        for label in self.model.labels:
-            probability = self.model.priors[label]
-            for key in user_data:
-                feature_probs = self.model.conditional_probs[label].get(key, {})
-                probability *= feature_probs.get(user_data[key], 1e-6)
-            result.append(probability)
-
-        best_label = self.model.labels[result.index(max(result))]
-        print("Predicted label:", best_label)
-        print("Probability:", max(result))
-        return best_label
-
-
-loader = DataLoader("data for NB buys computer.csv")
-loader.load()
-loader.drop_columns(['id'])
-clean_df = loader.get_data()
-
-model = NaiveBayesClassifier()
-model.fit(clean_df)
-predictor = NaiveBayesPredictor(model)
-
-# תצפית לבדיקה
-test_observation = {
-    "age": "youth",
-    "income": "high",
-    "student": "no",
-    "credit_rating": "fair"
-}
-
-# ביצוע חיזוי
-predictor.predict(test_observation)
-correct = 0
-total = 0
-
-for _, row in clean_df.iterrows():
-    # יוצרים dict עם כל העמודות חוץ מהעמודה של התוצאה
-    features = row.drop(model.target).to_dict()
-    actual = row[model.target]
-    predicted = predictor.predict(features)
-
-    if predicted == actual:
-        correct += 1
-    total += 1
-
-accuracy = correct / total
-print(f"{accuracy:.2%}")
 
