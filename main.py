@@ -11,7 +11,7 @@ class Main:
         self.df = None
 
     def run(self):
-        # טוען נתונים
+        # Load data
         loader = DataLoader(self.filepath)
         loader.load()
         columns_input = input("Enter column names to delete (comma separated): ")
@@ -23,14 +23,14 @@ class Main:
 
         self.df = loader.get_data()
 
-        # מאמן את המודל
+        # Train the model
         self.model = NaiveBayesClassifier()
         self.model.fit(self.df)
 
-        # יוצר את החוזה
+        # Create the predictor
         self.predictor = NaiveBayesPredictor(self.model)
 
-        # תצפית לבדיקה
+        # Test observation for checking
         test_observation = {futer : None for futer in self.model.columns }
         for feature in test_observation:
             value = input(f"Enter value for {feature}: ").strip()
