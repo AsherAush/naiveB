@@ -1,50 +1,30 @@
-from fastapi import FastAPI, UploadFile, Form
-from pydantic import BaseModel
-import pandas as pd
+from fastapi import FastAPI, Query, HTTPException, Request
 from data_loader import DataLoader
 from naive_bayes import NaiveBayesClassifier
 from predictor import NaiveBayesPredictor
-import tempfile
 
 app = FastAPI()
 
-model = None
-predictor = None
+# טען את הנתונים פעם אחת כששרת עולה
+loader = DataLoader("data for NB buys computer.csv")
+loader.load()
+columns_to_drop = ["id"]
+loader.drop_columns(columns_to_drop)
+df = loader.get_data()
+
+# אימון המודל
+model = NaiveBayesClassifier()
+model.fit(df)
+predictor = NaiveBayesPredictor(model)
 
 
-class PredictionRequest(BaseModel):
-    features: dict
+@app.get("/predict")
+def predict(request: Request):
+    # שלוף את כל הפרמטרים שהוזנו ב-URL
+    observation = dict(request.query_params)
 
+    if not observation:
+        return {"error": "Please provide at least one query parameter for prediction."}
 
-@app.post("/train/")
-async def train_model(file: UploadFile, columns_to_drop: str = Form("")):
-    global model, predictor
-
-    # שמירה זמנית של הקובץ
-    temp = tempfile.NamedTemporaryFile(delete=False)
-    temp.write(await file.read())
-    temp.close()
-
-    # טענת הקובץ
-    loader = DataLoader(temp.name)
-    loader.load()
-
-    if columns_to_drop:
-        columns = [c.strip() for c in columns_to_drop.split(",")]
-        loader.drop_columns(columns)
-
-    df = loader.get_data()
-    model = NaiveBayesClassifier()
-    model.fit(df)
-    predictor = NaiveBayesPredictor(model)
-
-    return {"message": "Model trained successfully", "features": list(model.columns)}
-
-
-@app.post("/predict/")
-def predict(request: PredictionRequest):
-    if predictor is None:
-        return {"error": "Model is not trained yet"}
-
-    prediction = predictor.predict(request.features)
+    prediction = predictor.predict(observation)
     return {"prediction": prediction}

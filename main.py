@@ -5,7 +5,7 @@ from predictor import NaiveBayesPredictor
 
 class Main:
     def __init__(self):
-        self.filepath = input("Enter the name of the CSV file (including the extension): ").strip()
+        self.filepath = "data for NB buys computer.csv"
         self.model = None
         self.predictor = None
         self.df = None
@@ -15,7 +15,7 @@ class Main:
         loader = DataLoader(self.filepath)
         loader.load()
         columns_input = input("Enter column names to delete (comma separated): ")
-        columns_to_drop = [col.strip() for col in columns_input.split(',') if col.strip()]
+        columns_to_drop = ["id"]
         if columns_to_drop:
             loader.drop_columns(columns_to_drop)
         else:
