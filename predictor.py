@@ -1,3 +1,5 @@
+from nt import startfile
+import __main__
 import pandas as pd
 
 class NaiveBayesPredictor:
@@ -21,6 +23,8 @@ class NaiveBayesPredictor:
         # Find the label with highest probability
         predicted_label = max(result, key=result.get)
         # Print the prediction results
-        print("Predicted probabilities:", result[predicted_label], "for label:", predicted_label)
+        if __main__.__file__.endswith("Server.py"):
+           print("Predicted probabilities:", result[predicted_label], "for label:", predicted_label)
+        # print("Predicted probabilities:", result[predicted_label], "for label:", predicted_label)
         # Return the predicted label
         return predicted_label
