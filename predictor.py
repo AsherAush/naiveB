@@ -23,7 +23,7 @@ class NaiveBayesPredictor:
         # Find the label with highest probability
         predicted_label = max(result, key=result.get)
         # Print the prediction results
-        if __main__.__file__.endswith("main.py"):
+        if __main__.__file__.endswith("Server.py"):
            print("Predicted probabilities:", result[predicted_label], "for label:", predicted_label)
         # print("Predicted probabilities:", result[predicted_label], "for label:", predicted_label)
         # Return the predicted label
