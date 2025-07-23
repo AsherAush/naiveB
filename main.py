@@ -14,7 +14,6 @@ class Main:
         # Load data
         loader = DataLoader(self.filepath)
         loader.load()
-        columns_input = input("Enter column names to delete (comma separated): ")
         columns_to_drop = ["id"]
         if columns_to_drop:
             loader.drop_columns(columns_to_drop)
