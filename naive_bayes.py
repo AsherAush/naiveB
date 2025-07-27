@@ -47,3 +47,5 @@ class NaiveBayesClassifier:
 
                     probs[val] = count / total
                 self.conditional_probs[label][feature] = probs
+
+        return self.conditional_probs
