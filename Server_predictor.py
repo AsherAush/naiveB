@@ -12,7 +12,7 @@ predictor = None
 def fetch_model_from_server1():
     global model, predictor
     # שלח בקשה לשרת 1
-    response = requests.get("http://127.0.0.1:8006/train")
+    requests.get("http://server-train:8006/train")
     if response.status_code == 200:
         model_dict = response.json().get("dic")
         if model_dict:

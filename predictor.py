@@ -1,4 +1,3 @@
-from nt import startfile
 import pandas as pd
 import __main__
 
