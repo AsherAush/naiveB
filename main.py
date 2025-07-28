@@ -24,10 +24,10 @@ class Main:
 
         # Train the model
         self.model = NaiveBayesClassifier()
-        self.model.fit(self.df)
+        dict = self.model.fit(self.df)
 
         # Create the predictor
-        self.predictor = NaiveBayesPredictor(self.model)
+        self.predictor = NaiveBayesPredictor(dict)
 
         # Test observation for checking
         test_observation = {futer : None for futer in self.model.columns }

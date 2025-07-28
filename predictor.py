@@ -1,23 +1,23 @@
 from nt import startfile
-import __main__
 import pandas as pd
+import __main__
 
 class NaiveBayesPredictor:
-    def __init__(self, model):
+    def __init__(self, model_dict: dict):
         # Initialize predictor with trained Naive Bayes model
-        self.model = model
+        self.model = model_dict
 
     def predict(self, user_data : dict):
         # Dictionary to store probability calculations for each label
         result = {}
         # Iterate through each possible label/class
-        for label in self.model.labels:
+        for label in self.model["labels"]:
             # Start with prior probability of this label
-            probability = self.model.priors[label]
+            probability = self.model["priors"][label]
             # Multiply by conditional probability for each feature
-            for  key in user_data:
+            for key in user_data:
                 # Get conditional probability or use small value if feature value not seen in training
-                probability *= self.model.conditional_probs[label][key].get(user_data[key], 1e-6)
+                probability *= self.model["conditional_probs"][label][key].get(user_data[key], 1e-6)
             # Store final probability for this label
             result[label] = probability
         # Find the label with highest probability

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Query, HTTPException, Request
 from data_loader import DataLoader
 from naive_bayes import NaiveBayesClassifier
+
 import uvicorn
 
 app = FastAPI()
@@ -16,7 +17,8 @@ def train_model():
     model = NaiveBayesClassifier()
     dict_model = model.fit(df)
 
-    return {"dic":didt_model}
+    return {"dic": dict_model}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host= "127.0.0.1" , port=8006)

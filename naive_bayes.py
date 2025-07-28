@@ -48,4 +48,8 @@ class NaiveBayesClassifier:
                     probs[val] = count / total
                 self.conditional_probs[label][feature] = probs
 
-        return self.conditional_probs
+        return {
+        "priors": self.priors,
+        "conditional_probs": self.conditional_probs,
+        "labels": list(self.labels)
+        }
