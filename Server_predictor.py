@@ -2,16 +2,17 @@ from fastapi import FastAPI, Request
 from predictor import NaiveBayesPredictor
 import requests
 import uvicorn
-
+# This is the predictor server that fetches the model from the training server and uses it for predictions.
 app = FastAPI()
 
 model = None
 predictor = None
 
+# Fetch the model from the training server when the application starts
 @app.on_event("startup")
 def fetch_model_from_server1():
     global model, predictor
-    # שלח בקשה לשרת 1
+    # Make a request to the training server to get the model
     requests.get("http://server-train:8006/train")
     if response.status_code == 200:
         model_dict = response.json().get("dic")

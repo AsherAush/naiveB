@@ -2,14 +2,14 @@ from data_loader import DataLoader
 from naive_bayes import NaiveBayesClassifier
 from predictor import NaiveBayesPredictor
 
-
+# This is the main control center for everything
 class Main:
     def __init__(self):
         self.filepath = "data for NB buys computer.csv"
         self.model = None
         self.predictor = None
         self.df = None
-
+    # This function runs the main logic of the program
     def run(self):
         # Load data
         loader = DataLoader(self.filepath)
@@ -24,10 +24,10 @@ class Main:
 
         # Train the model
         self.model = NaiveBayesClassifier()
-        dict = self.model.fit(self.df)
+        model_dict = self.model.fit(self.df)
 
         # Create the predictor
-        self.predictor = NaiveBayesPredictor(dict)
+        self.predictor = NaiveBayesPredictor(model_dict)
 
         # Test observation for checking
         test_observation = {futer : None for futer in self.model.columns }
